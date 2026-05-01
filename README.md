@@ -33,14 +33,17 @@ This system treats those failures as **protocol violations**, not quirks.
 
 ## Quick Start
 
-### Claude Code (Recommended)
+### Claude Code
 
 ```bash
-# Install the plugin
-/plugin marketplace add adnanshuja/llm-execution-protocol
-/plugin install llm-execution-protocol@llm-execution-protocol
+# Option A: Clone the full system into your project
+git clone https://github.com/adnanshuja/agent-runtime.git .llm-protocol
+# Then add to your CLAUDE.md: "See .llm-protocol/ for the LLM Execution Protocol"
 
-# Use it
+# Option B: Copy just the CLAUDE.md
+curl -o CLAUDE.md https://raw.githubusercontent.com/adnanshuja/agent-runtime/main/CLAUDE.md
+
+# Use it in any prompt:
 Use LLM Execution Protocol in STRICT mode.
 ```
 

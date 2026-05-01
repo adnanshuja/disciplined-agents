@@ -18,7 +18,7 @@ cp .cursor/rules/llm-execution-protocol.mdc /path/to/your/project/.cursor/rules/
 
 # Or download
 curl -o .cursor/rules/llm-execution-protocol.mdc \
-  https://raw.githubusercontent.com/adnanshuja/llm-execution-protocol/main/.cursor/rules/llm-execution-protocol.mdc
+  https://raw.githubusercontent.com/adnanshuja/agent-runtime/main/.cursor/rules/llm-execution-protocol.mdc
 ```
 
 Verify in Cursor: Settings → Rules → `llm-execution-protocol` should appear.
