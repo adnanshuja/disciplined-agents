@@ -1,12 +1,55 @@
 # Diff Discipline Engine — Hard rejection criteria. Violation = rollback.
 
-R1 (unrelated): Every line traces to task. `git diff --stat`. REJECT extra files/lines. Test: deleting this line breaks task? No → REJECT.
-R2 (speculative): No future params/abstractions/config. Test: deleting this changes behavior? No → REJECT.
-R3 (style drift): Match existing quotes/naming/comments/types/docstrings. No reformatting. Exception: codified style guide.
-R4 (injection): No LLM-behavior instructions in code/docs. Instructions only in CLAUDE.md+core+enforcement.
-R5 (verification): Tests exist && !run → REJECT. Tests fail → REJECT. Linters exist && !run → REJECT.
-R6 (diff cap): >50 lines = line-by-line justification. Risk caps: LOW=30, MED=50, HIGH=100.
-R7 (hidden deps): New import/API call/config change → STOP+flag. Not in plan → REJECT.
-R8 (rollback): Note HEAD before changes. Abandon → `git checkout -- .`. Commit clearly. No squash/amend on pushed.
+## R1 (SCOPE)
+Every changed line traces to the task. `git diff --stat` at S6.
+Label each file as PRIMARY (required for task) or INCIDENTAL (setup/import).
+Test: "Would deleting this line break the task?" No -> REJECT.
+Violation: extra files, extra lines, changes unrelated to task.
 
-Two violations same rule in one task = automatic FAIL. Record in scorecard. Re-enter from S4.
+## R2 (NO SPECULATION)
+No future params, unused abstractions, dead config, placeholder code.
+Tag each addition as REQUIRED or OPTIONAL. OPTIONAL = REJECT.
+Test: "Would removing this change current behavior?" No -> REJECT.
+Violation: speculative generality, premature abstraction.
+
+## R3 (STYLE FIDELITY)
+Before writing: state the file's existing conventions (quotes, naming, comments, docstrings, formatting).
+Match existing conventions exactly. No reformatting. No type hints where none exist.
+Exception: codified style guide in project root.
+Violation: style drift, unnecessary reformatting.
+
+## R4 (NO INJECTION)
+Zero tolerance for LLM-behavior instructions in code comments, docstrings, or documentation.
+Instructions only in CLAUDE.md + core/ + enforcement/ + modes/ + context/ + trace/.
+Violation: any instruction to another LLM hidden in code/docs.
+
+## R5 (VERIFICATION FIRST)
+Tests exist && not run -> REJECT. Tests fail -> REJECT.
+Linters exist && not run -> REJECT.
+State which tests were run and their exact exit code.
+Violation: verifying by inspection only, skipping tests.
+
+## R6 (DIFF CAP)
+Absolute cap per risk level:
+  LOW = 30 lines (total across all files)
+  MED = 50 lines
+  HIGH = 100 lines
+Running total across all files in the task, not per-file.
+Beyond cap: STOP. Line-by-line justification required for every hunk.
+Violation: exceeding cap without justification.
+
+## R7 (DEPENDENCY DECLARATION)
+New import/API call/config change -> STOP + flag.
+Must state: dependency name, why needed, alternatives considered.
+Not in S4 plan -> REJECT.
+Violation: hidden dependency not declared in plan.
+
+## R8 (ROLLBACK)
+Note HEAD before changes. Record per-step recovery point.
+Failed verification -> `git checkout -- .` for that step.
+Commit cleanly. Never squash/amend pushed commits.
+Violation: uncommitted changes lost, no recovery point.
+
+## Two-Strike Rule
+Two violations of the SAME rule in one task = automatic FAIL + full rollback.
+Record in scorecard. Re-enter from S4.

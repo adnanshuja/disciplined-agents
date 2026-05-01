@@ -1,6 +1,13 @@
 # FAST — LOW risk only. FORBIDDEN for HIGH risk, refactors, unfamiliar codebases.
 
-Protocol: Abbreviated. 1-2 sentences/stage. Combine S1-3. Combine S4-5. Skip S6 for cosmetic-only changes.
-Enforcement: R1/R2/R4/R7 enforced. R3/R5/R6/R8 relaxed. Still minimal diff. No speculation.
-Scorecard: Optional. Brief. No fail threshold.
-User: No pauses between stages. No confirming questions. If mid-task risk is actually MED/HIGH → switch to STRICT immediately.
+Pipeline: S0->(S1+S2+S3 combined)->(S4+S5 combined)->S6->S7
+Gates active: H1, H2, H4, H7, H8 (relaxed)
+Interpretations: 1 minimum (can skip S2 if task unambiguous)
+Diff cap: LOW=50 lines (relaxed), MED=50 (still enforced)
+Per-change justification: OPTIONAL — only required for hunks >10 lines
+Scorecard: OPTIONAL. No fail threshold.
+User pauses: NONE. No confirming questions.
+Abbreviation: Stage combining permitted. 1-2 sentences per stage.
+
+Risk Escalation: If mid-task the risk is actually MED/HIGH ->
+  Switch to STRICT immediately. Do not complete in FAST mode.

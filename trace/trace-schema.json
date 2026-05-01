@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Disciplined Agents Execution Trace",
+  "description": "Machine-readable execution record for every Disciplined Agents run",
+  "type": "object",
+  "required": ["schema_version", "task", "pipeline", "assumptions", "changes", "scorecard"],
+  "properties": {
+    "schema_version": {"type": "string", "enum": ["3.0.0"]},
+    "task": {
+      "type": "object",
+      "required": ["description", "type", "risk", "mode"],
+      "properties": {
+        "description": {"type": "string"},
+        "type": {"type": "string", "enum": ["BUG_FIX", "FEATURE", "REFACTOR", "EXPLORATION"]},
+        "risk": {"type": "string", "enum": ["LOW", "MEDIUM", "HIGH"]},
+        "mode": {"type": "string", "enum": ["STRICT", "FAST", "DEBUG"]}
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "required": ["stages_completed", "stages_skipped", "gates_passed", "gates_failed"],
+      "properties": {
+        "stages_completed": {"type": "integer", "minimum": 0, "maximum": 8},
+        "stages_skipped": {"type": "integer", "minimum": 0},
+        "gates_passed": {"type": "integer", "minimum": 0},
+        "gates_failed": {"type": "integer", "minimum": 0}
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["text", "verified", "source"],
+        "properties": {
+          "text": {"type": "string"},
+          "verified": {"type": "boolean"},
+          "source": {"type": "string"}
+        }
+      },
+      "minItems": 1
+    },
+    "interpretations_considered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "selected"],
+        "properties": {
+          "id": {"type": "integer"},
+          "description": {"type": "string"},
+          "cost_if_wrong": {"type": "string"},
+          "selected": {"type": "boolean"},
+          "reason_rejected": {"type": "string"}
+        }
+      },
+      "minItems": 1
+    },
+    "changes": {
+      "type": "object",
+      "required": ["files_modified", "total_lines", "dependencies_added", "per_change_justifications"],
+      "properties": {
+        "files_modified": {"type": "array", "items": {"type": "string"}},
+        "total_lines": {"type": "integer", "minimum": 0},
+        "dependencies_added": {"type": "integer", "minimum": 0},
+        "per_change_justifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["file", "lines", "reason"],
+            "properties": {
+              "file": {"type": "string"},
+              "lines": {"type": "string"},
+              "reason": {"type": "string"},
+              "risk": {"type": "string"}
+            }
+          }
+        },
+        "violations_detected": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "risks": {
+      "type": "object",
+      "properties": {
+        "detected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "risk": {"type": "string"},
+              "mitigated": {"type": "boolean"},
+              "evidence": {"type": "string"}
+            }
+          }
+        },
+        "unmitigated": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "alternatives_skipped": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "alternative": {"type": "string"},
+          "reason_skipped": {"type": "string"}
+        }
+      }
+    },
+    "scorecard": {
+      "type": "object",
+      "required": ["correctness", "minimality", "assumption_accuracy", "verification", "weighted_score", "passed"],
+      "properties": {
+        "correctness": {"type": "integer", "minimum": 0, "maximum": 10},
+        "minimality": {"type": "integer", "minimum": 0, "maximum": 10},
+        "assumption_accuracy": {"type": "integer", "minimum": 0, "maximum": 10},
+        "verification": {"type": "integer", "minimum": 0, "maximum": 10},
+        "weighted_score": {"type": "number", "minimum": 0, "maximum": 10},
+        "passed": {"type": "boolean"}
+      }
+    },
+    "self_evaluation": {
+      "type": "object",
+      "properties": {
+        "correctness": {"type": "integer", "minimum": 0, "maximum": 10},
+        "minimality": {"type": "integer", "minimum": 0, "maximum": 10},
+        "assumption_accuracy": {"type": "integer", "minimum": 0, "maximum": 10},
+        "unnecessary_complexity": {"type": "integer", "minimum": 0, "maximum": 10},
+        "notes": {"type": "string"}
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "started_at": {"type": "string", "format": "date-time"},
+        "completed_at": {"type": "string", "format": "date-time"},
+        "total_steps": {"type": "integer", "minimum": 0},
+        "rollbacks": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

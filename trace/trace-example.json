@@ -1,0 +1,66 @@
+{
+  "schema_version": "3.0.0",
+  "task": {
+    "description": "Fix registration form error display — validation errors not shown to user",
+    "type": "BUG_FIX",
+    "risk": "MEDIUM",
+    "mode": "STRICT"
+  },
+  "pipeline": {
+    "stages_completed": 8,
+    "stages_skipped": 0,
+    "gates_passed": 8,
+    "gates_failed": 0
+  },
+  "assumptions": [
+    {"text": "Error validation runs but response format mismatches frontend expectation", "verified": true, "source": "code_inspection"},
+    {"text": "The bug is server-side, not client-side JS", "verified": true, "source": "confirmed with user"},
+    {"text": "Fix is limited to the response handler, not the validation logic", "verified": true, "source": "code_inspection"}
+  ],
+  "interpretations_considered": [
+    {"id": 1, "description": "Response format mismatch — validation runs but returns wrong status code", "cost_if_wrong": "Would waste time checking API contract", "selected": true},
+    {"id": 2, "description": "Validation doesn't run before form submission", "cost_if_wrong": "Would trace wrong execution path", "selected": false, "reason_rejected": "Form submits successfully, errors just don't display"}
+  ],
+  "changes": {
+    "files_modified": ["src/handlers/registration.py"],
+    "total_lines": 6,
+    "dependencies_added": 0,
+    "per_change_justifications": [
+      {"file": "src/handlers/registration.py", "lines": "+3 at line 42", "reason": "Return 422 with structured error body when validation fails", "risk": "None — only changes status code from 200 to 422"},
+      {"file": "src/handlers/registration.py", "lines": "+1 at line 5", "reason": "Import jsonify (already used elsewhere in file, just reordering)", "risk": "None"},
+      {"file": "src/handlers/registration.py", "lines": "+2 at line 15", "reason": "Fix elif guard to use form_data.get() instead of direct key access", "risk": "KeyError if email not in form_data"}
+    ],
+    "violations_detected": [],
+    "violations_skipped": []
+  },
+  "risks": {
+    "detected": [
+      {"risk": "Regression on valid-submission flow", "mitigated": true, "evidence": "Success test still passes after change"}
+    ],
+    "unmitigated": []
+  },
+  "alternatives_skipped": [
+    {"alternative": "Rewrite validation function with comprehensive checks", "reason_skipped": "Would violate R1 (unrelated) and R2 (speculative)"}
+  ],
+  "scorecard": {
+    "correctness": 10,
+    "minimality": 10,
+    "assumption_accuracy": 9,
+    "verification": 10,
+    "weighted_score": 9.75,
+    "passed": true
+  },
+  "self_evaluation": {
+    "correctness": 10,
+    "minimality": 10,
+    "assumption_accuracy": 9,
+    "unnecessary_complexity": 10,
+    "notes": "Fix was surgical. 6 lines, one file, no new deps. Assumption about server-side vs client-side was verified."
+  },
+  "metadata": {
+    "started_at": "2026-05-01T10:00:00Z",
+    "completed_at": "2026-05-01T10:12:00Z",
+    "total_steps": 4,
+    "rollbacks": 0
+  }
+}
