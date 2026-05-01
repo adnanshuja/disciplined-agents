@@ -1,4 +1,4 @@
-# Disciplined Agents v3.0.0
+# Disciplined Agents
 
 **LLMs don't fail because they're dumb. They fail because they lack discipline.**
 
